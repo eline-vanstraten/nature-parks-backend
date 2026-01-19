@@ -87,19 +87,19 @@ router.post('/seed', async (req, res) => {
 
             await Park.create({
 
-                // name: "Yosemite National Park",
-                // state: "California",
-                // location: "Sierra Nevada, Central California",
-                // parkType: "National Park",
-                // trails: [
-                //     "Half Dome Trail",
-                //     "Mist Trail"
-                // ],
-                // activities: [
-                //     "Rock Climbing",
-                //     "Waterfall Viewing"
-                // ],
-                // openingHours: "Open 24/7 all year"
+                name: "Yosemite National Park",
+                state: "California",
+                location: "Sierra Nevada, Central California",
+                parkType: "National Park",
+                trails: [
+                    "Half Dome Trail",
+                    "Mist Trail"
+                ],
+                activities: [
+                    "Rock Climbing",
+                    "Waterfall Viewing"
+                ],
+                openingHours: "Open 24/7 all year"
 
             });
 
