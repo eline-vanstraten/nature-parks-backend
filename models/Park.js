@@ -4,10 +4,11 @@ const parkSchema = new mongoose.Schema({
         name: {type: String, required: true},
         state: {type: String, required: true},
         location: {type: String, required: true},
-        parkType: {type: String, required: true},
         trails: {type: String, required: true},
         activities: {type: String, required: true},
         openingHours: {type: String, required: true},
+        imageUrl: {type: String, required: true},
+
 
     },
     {

@@ -17,8 +17,10 @@ router.get('/', async (req, res) => {
 
         //alleen titel en id zijn zichtbaar in de collection pagina
         const items = parks.map(park => ({
-                name: park.name,
                 id: park.id,
+                name: park.name,
+                state: park.state,
+                imageUrl: park.imageUrl,
                 _links: {
                     self: {
                         href: `${process.env.APPLICATION_URL}:${process.env.EXPRESS_PORT}/parks/${park.id}`,
@@ -90,7 +92,6 @@ router.post('/seed', async (req, res) => {
                 name: "Yosemite National Park",
                 state: "California",
                 location: "Sierra Nevada, Central California",
-                parkType: "National Park",
                 trails: [
                     "Half Dome Trail",
                     "Mist Trail"
@@ -99,7 +100,8 @@ router.post('/seed', async (req, res) => {
                     "Rock Climbing",
                     "Waterfall Viewing"
                 ],
-                openingHours: "Open 24/7 all year"
+                openingHours: "Open 24/7 all year",
+                imageUrl: "https://www.visittheusa.com/sites/default/files/styles/hero_l/public/images/hero_media_image/2016-10/Yosemite_CROPPED_Web72DPI.jpg?itok=yh64rimD"
 
             });
 
