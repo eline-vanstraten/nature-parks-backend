@@ -12,10 +12,30 @@ router.options('/', (req, res) => {
 
 router.get('/', async (req, res) => {
 
-    try {
-        const parks = await Park.find();
 
-        //alleen titel en id zijn zichtbaar in de collection pagina
+    try {
+
+        //pagination
+        const totalItems = await Park.countDocuments();
+        const page = parseInt(req.query.page) || 1;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
+        let parks;
+        let totalPages;
+        let currentItems;
+
+        if (limit) {
+            const skip = (page - 1) * limit;
+            parks = await Park.find().skip(skip).limit(limit);
+
+            totalPages = Math.ceil(totalItems / limit) || 1;
+            currentItems = parks.length;
+        } else {
+            parks = await Park.find();
+            totalPages = 1;
+            currentItems = parks.length;
+        }
+
         const items = parks.map(park => ({
                 id: park.id,
                 name: park.name,
@@ -28,16 +48,48 @@ router.get('/', async (req, res) => {
                 }
             }
         ));
-
         //get gelukt
         res.status(200).json({
             items,
             _links: {
                 self: {
-                    href: `${process.env.APPLICATION_URL}:${process.env.EXPRESS_PORT}/parks`,
+                    href: limit
+                        ? `${process.env.APPLICATION_URL}:${process.env.EXPRESS_PORT}/parks?page=${page}&limit=${limit}`
+                        : `${process.env.APPLICATION_URL}:${process.env.EXPRESS_PORT}/parks`,
                 },
                 collection: {
                     href: `${process.env.APPLICATION_URL}:${process.env.EXPRESS_PORT}/parks`,
+                },
+            },
+
+            //pagination
+            pagination: {
+                currentPage: page,
+                currentItems,
+                totalPages,
+                totalItems,
+
+                _links: {
+                    first: {
+                        page: 1,
+                        href: limit ? `${process.env.APPLICATION_URL}:${process.env.EXPRESS_PORT}/parks?page=1&limit=${limit}`
+                            : `${process.env.APPLICATION_URL}:${process.env.EXPRESS_PORT}/parks`,
+                    },
+                    last: {
+                        page: totalPages,
+                        href: limit ? `${process.env.APPLICATION_URL}:${process.env.EXPRESS_PORT}/parks?page=${totalPages}&limit=${limit}`
+                            : `${process.env.APPLICATION_URL}:${process.env.EXPRESS_PORT}/parks`,
+
+                    },
+                    previous: limit && page > 1 ? {
+                        page: page - 1,
+                        href: `${process.env.APPLICATION_URL}:${process.env.EXPRESS_PORT}/parks?page=${page - 1}&limit=${limit}`,
+                    } : null,
+                    next: limit && page < totalPages ? {
+                        page: page + 1,
+                        href: `${process.env.APPLICATION_URL}:${process.env.EXPRESS_PORT}/parks?page=${page + 1}&limit=${limit}`,
+                    } : null
+
                 }
             }
         });
@@ -49,6 +101,7 @@ router.get('/', async (req, res) => {
     }
 
 });
+
 
 router.options('/:id', (req, res) => {
     res.header('Allow', 'GET,PUT,DELETE,OPTIONS');
