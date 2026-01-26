@@ -132,43 +132,56 @@ router.get('/:id', async (req, res) => {
 
 });
 
-router.post('/seed', async (req, res) => {
-    try {
-        //delete all current
-        await Park.deleteMany();
+router.post('/', async (req, res) => {
 
-        //add new ones
-        for (let i = 0; i < req.body.amount; i++) {
+    //post overload
+    const {method} = req.body;
 
-            await Park.create({
+    if (method === "SEED") {
+        const amount = parseInt(req.body.amount, 10);
 
-                name: "Yosemite National Park",
-                state: "California",
-                location: "Sierra Nevada, Central California",
-                trails: [
-                    "Half Dome Trail",
-                    "Mist Trail"
-                ],
-                activities: [
-                    "Rock Climbing",
-                    "Waterfall Viewing"
-                ],
-                openingHours: "Open 24/7 all year",
-                imageUrl: "https://www.visittheusa.com/sites/default/files/styles/hero_l/public/images/hero_media_image/2016-10/Yosemite_CROPPED_Web72DPI.jpg?itok=yh64rimD"
-
-            });
-
+        if (!amount || amount <= 0) {
+            return res.status(400).json({message: "Geef een geldig aantal aan"});
         }
-        //post succesvol gedaan
-        res.status(201).json({message: "Database succesvol geseed"});
-    } catch (e) {
-        //server fout, eerste pagina die laad
-        res.status(500).json({error: e.message});
+
+
+        try {
+
+            //delete all current
+            // await Park.deleteMany();
+
+            const parksInsert = [];
+
+            //add new ones
+            for (let i = 0; i < req.body.amount; i++) {
+
+                parksInsert.push({
+
+                    name: "Yosemite National Park",
+                    state: "California",
+                    location: "Sierra Nevada, Central California",
+                    trails:
+                        "Half Dome Trail",
+                    activities:
+                        "Rock Climbing",
+                    openingHours: "Open 24/7 all year",
+                    imageUrl: "https://www.visittheusa.com/sites/default/files/styles/hero_l/public/images/hero_media_image/2016-10/Yosemite_CROPPED_Web72DPI.jpg?itok=yh64rimD"
+
+                })
+
+            }
+
+            await Park.insertMany(parksInsert);
+
+            return res.status(201).json({message: "Database succesvol geseed"});
+
+        } catch (e) {
+            //client error, fout in required fields
+            res.status(400).json({error: e.message});
+        }
     }
 
-});
-
-router.post('/', async (req, res) => {
+    //normal post
     try {
 
         const park = await Park.create(req.body);
@@ -185,6 +198,27 @@ router.post('/', async (req, res) => {
 
 
 router.put('/:id', async (req, res) => {
+    try {
+        const park = await Park.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            {new: true, runValidators: true}
+        );
+
+        if (!park) {
+            //item niet gevonden
+            return res.status(404).json({message: "Park niet gevonden"});
+        }
+        //put succesvol aangepast
+        res.status(200).json(park);
+
+    } catch (e) {
+        //ongeldige input
+        res.status(400).json({error: "Ongeldige data of ID"});
+    }
+});
+
+router.patch('/:id', async (req, res) => {
     try {
         const park = await Park.findByIdAndUpdate(
             req.params.id,
