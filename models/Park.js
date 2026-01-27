@@ -8,6 +8,8 @@ const parkSchema = new mongoose.Schema({
         activities: {type: String, required: true},
         openingHours: {type: String, required: true},
         imageUrl: {type: String, required: true},
+        //add row for favorite
+        isFavorite: {type: Boolean, default: false},
 
 
     },

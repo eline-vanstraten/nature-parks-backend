@@ -41,6 +41,7 @@ router.get('/', async (req, res) => {
                 name: park.name,
                 state: park.state,
                 imageUrl: park.imageUrl,
+                isFavorite: park.isFavorite,
                 _links: {
                     self: {
                         href: `${process.env.APPLICATION_URL}:${process.env.EXPRESS_PORT}/parks/${park.id}`,
@@ -104,8 +105,8 @@ router.get('/', async (req, res) => {
 
 
 router.options('/:id', (req, res) => {
-    res.header('Allow', 'GET,PUT,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Methods', "GET,PUT,DELETE,OPTIONS");
+    res.header('Allow', 'GET,PUT,PATCH,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Methods', "GET,PUT,PATCH,DELETE,OPTIONS");
     res.header('Access-Control-Allow-Headers', "Origin,Content-Type,Accept,Authorization");
 
     res.status(204).send();
