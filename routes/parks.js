@@ -119,7 +119,7 @@ router.get('/:id', async (req, res) => {
 
         if (park === null) {
             //item niet gevonden
-            res.status(404).send();
+            return res.status(404).send();
         }
 
         //get lukt
